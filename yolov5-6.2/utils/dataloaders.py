@@ -37,7 +37,7 @@ from utils.torch_utils import torch_distributed_zero_first
 # Parameters
 HELP_URL = 'https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data'
 IMG_FORMATS = 'bmp', 'dng', 'jpeg', 'jpg', 'mpo', 'png', 'tif', 'tiff', 'webp'  # include image suffixes
-VID_FORMATS = 'asf', 'avi', 'gif', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ts', 'wmv'  # include video suffixes
+VID_FORMATS = 'asf', 'avi', 'gif', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ts', 'wmv'  # include video2 suffixes
 BAR_FORMAT = '{l_bar}{bar:10}{r_bar}{bar:-10b}'  # tqdm bar format
 LOCAL_RANK = int(os.getenv('LOCAL_RANK', -1))  # https://pytorch.org/docs/stable/elastic/run.html
 
@@ -185,7 +185,7 @@ class _RepeatSampler:
 
 
 class LoadImages:
-    # YOLOv5 image/video dataloader, i.e. `python detect.py --source image.jpg/vid.mp4`
+    # YOLOv5 image/video2 dataloader, i.e. `python detect.py --source image.jpg/vid.mp4`
     def __init__(self, path, img_size=640, stride=32, auto=True):
         files = []
         for p in sorted(path) if isinstance(path, (list, tuple)) else [path]:
@@ -211,7 +211,7 @@ class LoadImages:
         self.mode = 'image'
         self.auto = auto
         if any(videos):
-            self.new_video(videos[0])  # new video
+            self.new_video(videos[0])  # new video2
         else:
             self.cap = None
         assert self.nf > 0, f'No images or videos found in {p}. ' \
@@ -227,20 +227,20 @@ class LoadImages:
         path = self.files[self.count]
 
         if self.video_flag[self.count]:
-            # Read video
-            self.mode = 'video'
+            # Read video2
+            self.mode = 'video2'
             ret_val, img0 = self.cap.read()
             while not ret_val:
                 self.count += 1
                 self.cap.release()
-                if self.count == self.nf:  # last video
+                if self.count == self.nf:  # last video2
                     raise StopIteration
                 path = self.files[self.count]
                 self.new_video(path)
                 ret_val, img0 = self.cap.read()
 
             self.frame += 1
-            s = f'video {self.count + 1}/{self.nf} ({self.frame}/{self.frames}) {path}: '
+            s = f'video2 {self.count + 1}/{self.nf} ({self.frame}/{self.frames}) {path}: '
 
         else:
             # Read image
@@ -273,7 +273,7 @@ class LoadWebcam:  # for inference
         self.img_size = img_size
         self.stride = stride
         self.pipe = eval(pipe) if pipe.isnumeric() else pipe
-        self.cap = cv2.VideoCapture(self.pipe)  # video capture object
+        self.cap = cv2.VideoCapture(self.pipe)  # video2 capture object
         self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 3)  # set buffer size
 
     def __iter__(self):
@@ -327,9 +327,9 @@ class LoadStreams:
         self.sources = [clean_str(x) for x in sources]  # clean source names for later
         self.auto = auto
         for i, s in enumerate(sources):  # index, source
-            # Start thread to read frames from video stream
+            # Start thread to read frames from video2 stream
             st = f'{i + 1}/{n}: {s}... '
-            if urlparse(s).hostname in ('www.youtube.com', 'youtube.com', 'youtu.be'):  # if source is YouTube video
+            if urlparse(s).hostname in ('www.youtube.com', 'youtube.com', 'youtu.be'):  # if source is YouTube video2
                 check_requirements(('pafy', 'youtube_dl==2020.12.2'))
                 import pafy
                 s = pafy.new(s).getbest(preftype="mp4").url  # YouTube URL
