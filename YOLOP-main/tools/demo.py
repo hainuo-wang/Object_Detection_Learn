@@ -145,9 +145,12 @@ def detect(cfg, opt):
                 fps = vid_cap.get(cv2.CAP_PROP_FPS)
                 h, w, _ = img_det.shape
                 vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*fourcc), fps, (w, h))
-            cv2.imshow('image', img_det)
-            cv2.waitKey(1)
-            vid_writer.write(img_det)
+            if opt.img_view:
+                cv2.imshow('image', img_det)
+                cv2.waitKey(1)
+                vid_writer.write(img_det)
+            else:
+                vid_writer.write(img_det)
 
         else:
             cv2.imshow('image', img_det)
@@ -161,8 +164,9 @@ def detect(cfg, opt):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='../weights/End-to-end.pth', help='model.pth path(s)')
-    parser.add_argument('--source', type=str, default='../inference/myvideos',
-                        help='source')  # file/folder   ex:inference/images
+    parser.add_argument('--source', type=str, default='../inference/videos',
+                        help='file/dir/URL/glob, 0 for webcam')  # file/folder   ex:inference/images
+    parser.add_argument('--img_view', type=bool, default=False, help='Real-time display')
     parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.25, help='object confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='IOU threshold for NMS')
