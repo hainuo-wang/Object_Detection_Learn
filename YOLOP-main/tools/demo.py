@@ -1,9 +1,9 @@
 import argparse
-import os, sys
+import os
 import shutil
+import sys
 import time
 from pathlib import Path
-import imageio
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
@@ -13,16 +13,15 @@ import cv2
 import torch
 import torch.backends.cudnn as cudnn
 from numpy import random
-import numpy as np
 import torchvision.transforms as transforms
 
-from lib.config import cfg
-from lib.utils.utils import create_logger, select_device, time_synchronized
-from lib.models import get_net
-from lib.dataset import LoadImages, LoadStreams
-from lib.core.general import non_max_suppression, scale_coords
-from lib.utils import plot_one_box, show_seg_result
-from lib.core.function import AverageMeter
+from ..lib.config import cfg
+from ..lib.utils.utils import create_logger, select_device, time_synchronized
+from ..lib.models import get_net
+from ..lib.dataset import LoadImages, LoadStreams
+from ..lib.core.general import non_max_suppression, scale_coords
+from ..lib.utils import plot_one_box, show_seg_result
+from ..lib.core.function import AverageMeter
 from tqdm import tqdm
 
 normalize = transforms.Normalize(
@@ -164,9 +163,9 @@ def detect(cfg, opt):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='../weights/End-to-end.pth', help='model.pth path(s)')
-    parser.add_argument('--source', type=str, default='../inference/videos',
+    parser.add_argument('--source', type=str, default='1',
                         help='file/dir/URL/glob, 0 for webcam')  # file/folder   ex:inference/images
-    parser.add_argument('--img_view', type=bool, default=False, help='Real-time display')
+    parser.add_argument('--img_view', type=bool, default=True, help='Real-time display')
     parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.25, help='object confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='IOU threshold for NMS')
